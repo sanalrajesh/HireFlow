@@ -54,8 +54,32 @@ const CandidateProfile = () => {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    if (!fullName) {
+    if (!fullName.trim()) {
       setError('Full Name is required');
+      return;
+    }
+    if (!phone.trim()) {
+      setError('Phone Number is required');
+      return;
+    }
+    if (!location.trim()) {
+      setError('Location is required');
+      return;
+    }
+    if (!skills.trim()) {
+      setError('Skills are required');
+      return;
+    }
+    if (!summary.trim()) {
+      setError('Professional Summary is required');
+      return;
+    }
+    if (!experience.trim()) {
+      setError('Work Experience is required');
+      return;
+    }
+    if (!education.trim()) {
+      setError('Education is required');
       return;
     }
 
@@ -202,6 +226,7 @@ const CandidateProfile = () => {
           <h3 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
             <span>My Resume</span>
+            {!resumeUrl && <span className="text-danger text-sm font-bold">*</span>}
           </h3>
 
           {resumeUrl ? (
@@ -232,8 +257,8 @@ const CandidateProfile = () => {
             </div>
           ) : (
             <form onSubmit={handleResumeUpload} className="space-y-4">
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Upload your resume so employers can view your qualifications when you apply. Supported formats: PDF, DOC, DOCX (Max 5MB).
+              <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                Uploading your resume is required to apply for jobs. <span className="text-danger font-bold">(Required)</span> Supported formats: PDF, DOC, DOCX (Max 5MB).
               </p>
               
               <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50/50 transition-all-200 relative">
@@ -297,7 +322,7 @@ const CandidateProfile = () => {
             {/* Phone */}
             <div>
               <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Phone Number
+                Phone Number <span className="text-danger">*</span>
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -305,6 +330,7 @@ const CandidateProfile = () => {
                 </span>
                 <input
                   type="text"
+                  required
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
                   placeholder="555-555-5555"
                   value={phone}
@@ -316,7 +342,7 @@ const CandidateProfile = () => {
             {/* Location */}
             <div>
               <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-                Location
+                Location <span className="text-danger">*</span>
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -324,6 +350,7 @@ const CandidateProfile = () => {
                 </span>
                 <input
                   type="text"
+                  required
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
                   placeholder="e.g. Seattle, WA or Remote"
                   value={location}
@@ -336,7 +363,7 @@ const CandidateProfile = () => {
           {/* Skills */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Skills (comma-separated)
+              Skills (comma-separated) <span className="text-danger">*</span>
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -344,6 +371,7 @@ const CandidateProfile = () => {
               </span>
               <input
                 type="text"
+                required
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
                 placeholder="e.g. React, Node.js, Python, SQL"
                 value={skills}
@@ -355,10 +383,11 @@ const CandidateProfile = () => {
           {/* Summary */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Professional Summary
+              Professional Summary <span className="text-danger">*</span>
             </label>
             <textarea
               rows={4}
+              required
               className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
               placeholder="Tell employers about your career goals and what makes you a great candidate..."
               value={summary}
@@ -369,11 +398,12 @@ const CandidateProfile = () => {
           {/* Experience */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Work Experience (one entry per line)
+              Work Experience (one entry per line) <span className="text-danger">*</span>
             </label>
             <div className="relative">
               <textarea
                 rows={4}
+                required
                 className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
                 placeholder="Software Engineer at TechCorp (2022 - Present)&#10;Junior Developer at StartupInc (2020 - 2022)"
                 value={experience}
@@ -385,11 +415,12 @@ const CandidateProfile = () => {
           {/* Education */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
-              Education (one entry per line)
+              Education (one entry per line) <span className="text-danger">*</span>
             </label>
             <div className="relative">
               <textarea
                 rows={4}
+                required
                 className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-slate-800"
                 placeholder="M.S. in Computer Science, Stanford University (2020)&#10;B.S. in Software Engineering, UT Austin (2018)"
                 value={education}

@@ -43,3 +43,4 @@ const candidateProfileSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('CandidateProfile', candidateProfileSchema);
+

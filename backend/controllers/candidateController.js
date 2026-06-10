@@ -48,13 +48,18 @@ const getCandidateProfile = async (req, res) => {
 const upsertCandidateProfile = async (req, res) => {
   const { phone, location, skills, education, experience, summary, fullName } = req.body;
 
+  // 1. Validate that all required fields are present
+  if (!fullName || !phone || !location || !skills || !education || !experience || !summary) {
+    return res.status(400).json({ message: 'All profile details (Full Name, Phone, Location, Skills, Summary, Education, Experience) are required.' });
+  }
+
   try {
-    // 1. Update User name if provided
+    // 2. Update User name if provided
     if (fullName) {
       await User.findByIdAndUpdate(req.user._id, { fullName });
     }
 
-    // 2. Format inputs (skills, education, and experience might be strings or arrays)
+    // 3. Format inputs (skills, education, and experience might be strings or arrays)
     const skillsArray = Array.isArray(skills)
       ? skills
       : skills
@@ -64,14 +69,18 @@ const upsertCandidateProfile = async (req, res) => {
     const eduArray = Array.isArray(education)
       ? education
       : education
-      ? [education]
+      ? (typeof education === 'string' ? education.split('\n').map(s => s.trim()).filter(Boolean) : [education])
       : [];
 
     const expArray = Array.isArray(experience)
       ? experience
       : experience
-      ? [experience]
+      ? (typeof experience === 'string' ? experience.split('\n').map(s => s.trim()).filter(Boolean) : [experience])
       : [];
+
+    if (skillsArray.length === 0 || eduArray.length === 0 || expArray.length === 0) {
+      return res.status(400).json({ message: 'Please provide at least one entry for Skills, Education, and Experience.' });
+    }
 
     const profileData = {
       phone,

@@ -3,7 +3,7 @@ const Job = require('../models/Job');
 const User = require('../models/User');
 const EmployerProfile = require('../models/EmployerProfile');
 const CandidateProfile = require('../models/CandidateProfile');
-const { sendStatusUpdateEmail } = require('../services/emailService');
+const { sendStatusUpdateEmail, sendApplicationNotificationEmail } = require('../services/emailService');
 
 // @desc    Apply for a job
 // @route   POST /api/applications
@@ -26,7 +26,24 @@ const applyForJob = async (req, res) => {
       return res.status(400).json({ message: 'Cannot apply to a closed job posting' });
     }
 
-    // 2. Check if candidate already applied (Mongoose compound unique index will catch this, but checking first gives a cleaner response)
+    // 2. Verify candidate has completed their profile details and uploaded a resume
+    const profile = await CandidateProfile.findOne({ userId: req.user._id });
+    if (
+      !profile ||
+      !profile.phone ||
+      !profile.location ||
+      !profile.resumeUrl ||
+      !profile.summary ||
+      !profile.skills || profile.skills.length === 0 ||
+      !profile.education || profile.education.length === 0 ||
+      !profile.experience || profile.experience.length === 0
+    ) {
+      return res.status(400).json({
+        message: 'Please complete all details in your profile (phone, location, skills, summary, education, experience) and upload a resume before applying.'
+      });
+    }
+
+    // 3. Check if candidate already applied (Mongoose compound unique index will catch this, but checking first gives a cleaner response)
     const alreadyApplied = await Application.findOne({
       candidateId: req.user._id,
       jobId,
@@ -46,6 +63,30 @@ const applyForJob = async (req, res) => {
     // 4. Atomically increment applicationCount on Job
     job.applicationCount += 1;
     await job.save();
+
+    // 5. Fetch employer user details and notify them with candidate profile details
+    const employerUser = await User.findById(job.employerId);
+    if (employerUser) {
+      const candidateDetails = {
+        fullName: req.user.fullName,
+        email: req.user.email,
+        phone: profile.phone,
+        location: profile.location,
+        skills: profile.skills,
+        summary: profile.summary,
+        education: profile.education,
+        experience: profile.experience,
+        resumeUrl: profile.resumeUrl,
+      };
+
+      // Send application notification to the employer asynchronously
+      sendApplicationNotificationEmail(
+        employerUser.email,
+        employerUser.fullName,
+        job.title,
+        candidateDetails
+      );
+    }
 
     res.status(201).json({
       success: true,

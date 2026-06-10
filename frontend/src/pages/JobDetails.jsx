@@ -12,9 +12,10 @@ const JobDetails = () => {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
+  const [isProfileComplete, setIsProfileComplete] = useState(true);
   const [applySuccess, setApplySuccess] = useState('');
 
   useEffect(() => {
@@ -25,11 +26,25 @@ const JobDetails = () => {
         const res = await API.get(`/jobs/${id}`);
         setJob(res.data);
 
-        // Check if candidate already applied if user is logged in as Candidate
+        // Check if candidate already applied & profile completeness if user is logged in as Candidate
         if (user && user.role === 'Candidate') {
           const appsRes = await API.get('/applications/my');
           const hasApplied = appsRes.data.some((app) => app.jobId && app.jobId._id === id);
           setApplied(hasApplied);
+
+          const profileRes = await API.get('/candidate/profile');
+          const profile = profileRes.data;
+          const complete = (
+            profile &&
+            profile.phone &&
+            profile.location &&
+            profile.resumeUrl &&
+            profile.summary &&
+            profile.skills && profile.skills.length > 0 &&
+            profile.education && profile.education.length > 0 &&
+            profile.experience && profile.experience.length > 0
+          );
+          setIsProfileComplete(!!complete);
         }
       } catch (err) {
         console.error('Fetch job details error:', err.message);
@@ -100,7 +115,7 @@ const JobDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-4 text-left space-y-6">
-      
+
       {/* Back button */}
       <Link to="/jobs" className="inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-primary transition-all-200">
         <ChevronLeft className="h-4 w-4" />
@@ -122,16 +137,28 @@ const JobDetails = () => {
         </div>
       )}
 
+      {/* Profile Incomplete Warning Banner */}
+      {!isProfileComplete && user && user.role === 'Candidate' && (
+        <div className="bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200 flex items-start gap-3 animate-pulse">
+          <ShieldAlert className="h-5 w-5 mt-0.5 shrink-0 text-amber-500" />
+          <div>
+            <span className="text-sm font-semibold">Profile Incomplete</span>
+            <p className="text-xs mt-0.5 text-slate-600">
+              You must fill out all profile details (phone, location, skills, summary, education, and experience) and upload a resume before you can apply to job listings. <Link to="/candidate/profile" className="underline font-bold text-primary">Update Profile Now</Link>
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Main card */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-        
+
         {/* Header section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-100">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
-                job.status === 'Open' ? 'bg-success-light text-success' : 'bg-slate-100 text-slate-600'
-              }`}>
+              <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${job.status === 'Open' ? 'bg-success-light text-success' : 'bg-slate-100 text-slate-600'
+                }`}>
                 {job.status}
               </span>
               <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">
@@ -161,6 +188,13 @@ const JobDetails = () => {
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Applied</span>
               </button>
+            ) : !isProfileComplete ? (
+              <Link
+                to="/candidate/profile"
+                className="w-full md:w-auto block text-center px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-all-200 hover-scale shadow-md"
+              >
+                Complete Profile to Apply
+              </Link>
             ) : (
               <button
                 onClick={handleApply}
@@ -182,7 +216,7 @@ const JobDetails = () => {
               <span>${job.salary.toLocaleString()}/yr</span>
             </div>
           </div>
-          
+
           <div className="space-y-1">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Location</span>
             <div className="flex items-center gap-1 font-bold text-slate-800 text-sm">
