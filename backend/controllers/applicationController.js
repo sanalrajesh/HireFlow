@@ -108,6 +108,10 @@ const getMyApplications = async (req, res) => {
       .populate({
         path: 'jobId',
         select: 'title location salary status employerId employmentType experienceLevel',
+        populate: {
+          path: 'employerId',
+          select: 'fullName',
+        }
       })
       .sort({ appliedAt: -1 });
 
@@ -117,11 +121,13 @@ const getMyApplications = async (req, res) => {
         if (!app.jobId) return app;
         
         // Find EmployerProfile to get companyName
-        const employerProfile = await EmployerProfile.findOne({ userId: app.jobId.employerId });
+        const employerProfile = await EmployerProfile.findOne({ userId: app.jobId.employerId._id || app.jobId.employerId });
         
         // Return a plain object with companyName added
         const appObj = app.toObject();
-        appObj.jobId.companyName = employerProfile ? employerProfile.companyName : 'Unknown Company';
+        appObj.jobId.companyName = employerProfile && employerProfile.companyName
+          ? employerProfile.companyName
+          : (app.jobId.employerId && app.jobId.employerId.fullName ? app.jobId.employerId.fullName : 'Unknown Company');
         return appObj;
       })
     );
@@ -184,15 +190,22 @@ const updateApplicationStatus = async (req, res) => {
   }
 
   try {
-    // 1. Find the application and populate Job details
-    const application = await Application.findById(id).populate('jobId');
+    // 1. Find the application and populate Job details and Employer User details
+    const application = await Application.findById(id).populate({
+      path: 'jobId',
+      populate: {
+        path: 'employerId',
+        select: 'fullName email',
+      }
+    });
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
 
     // 2. Verify logged-in employer owns the job listing associated with this application
     const job = application.jobId;
-    if (!job || job.employerId.toString() !== req.user._id.toString()) {
+    const employerIdVal = job && job.employerId ? (job.employerId._id || job.employerId) : null;
+    if (!job || !employerIdVal || employerIdVal.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Access denied: You are not the owner of this job posting' });
     }
 
@@ -204,8 +217,10 @@ const updateApplicationStatus = async (req, res) => {
     const candidateUser = await User.findById(application.candidateId);
     
     // Fetch EmployerProfile for company name
-    const employerProfile = await EmployerProfile.findOne({ userId: job.employerId });
-    const companyName = employerProfile ? employerProfile.companyName : 'HireFlow Client';
+    const employerProfile = await EmployerProfile.findOne({ userId: employerIdVal });
+    const companyName = employerProfile && employerProfile.companyName
+      ? employerProfile.companyName
+      : (job.employerId && job.employerId.fullName ? job.employerId.fullName : 'HireFlow Client');
 
     if (candidateUser) {
       // Trigger Nodemailer notification asynchronously (so response is not blocked)
@@ -236,13 +251,13 @@ const getDashboardStats = async (req, res) => {
   try {
     if (req.user.role === 'Employer') {
       // Employer Dashboard stats:
-      // Total Jobs, Open Jobs, Closed Jobs, Total Applicants
-      const totalJobs = await Job.countDocuments({ employerId: req.user._id });
+      // Total Jobs, Open Jobs, Closed Jobs, Total Applicants (excluding Deleted jobs)
+      const totalJobs = await Job.countDocuments({ employerId: req.user._id, status: { $ne: 'Deleted' } });
       const openJobs = await Job.countDocuments({ employerId: req.user._id, status: 'Open' });
       const closedJobs = await Job.countDocuments({ employerId: req.user._id, status: 'Closed' });
 
-      // Get count of all applicants across all employer's jobs
-      const employerJobs = await Job.find({ employerId: req.user._id }, '_id');
+      // Get count of all applicants across all employer's active jobs
+      const employerJobs = await Job.find({ employerId: req.user._id, status: { $ne: 'Deleted' } }, '_id');
       const jobIds = employerJobs.map((j) => j._id);
       
       const totalApplicants = await Application.countDocuments({ jobId: { $in: jobIds } });

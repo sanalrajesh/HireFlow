@@ -145,27 +145,35 @@ const CandidateDashboard = () => {
 
                 <div className="flex items-center gap-6 self-start sm:self-center">
                   <div className="text-left sm:text-right">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
-                      app.status === 'Shortlisted'
-                        ? 'bg-success-light text-success'
-                        : app.status === 'Rejected'
-                        ? 'bg-danger-light text-danger'
-                        : 'bg-primary/10 text-primary'
-                    }`}>
-                      {app.status}
-                    </span>
+                    {app.jobId?.status === 'Deleted' || !app.jobId ? (
+                      <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-danger-light text-danger">
+                        Deleted
+                      </span>
+                    ) : (
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                        app.status === 'Shortlisted'
+                          ? 'bg-success-light text-success'
+                          : app.status === 'Rejected'
+                          ? 'bg-danger-light text-danger'
+                          : 'bg-primary/10 text-primary'
+                      }`}>
+                        {app.status}
+                      </span>
+                    )}
                     <p className="text-[10px] text-slate-400 mt-2">
                       Applied: {new Date(app.appliedAt).toLocaleDateString()}
                     </p>
                   </div>
                   
-                  {app.jobId && (
+                  {app.jobId && app.jobId.status !== 'Deleted' ? (
                     <Link
                       to={`/jobs/${app.jobId._id}`}
                       className="p-1 rounded hover:bg-slate-100 transition-all-200"
                     >
                       <ChevronRight className="h-5 w-5 text-slate-400" />
                     </Link>
+                  ) : (
+                    <div className="w-7"></div>
                   )}
                 </div>
               </div>

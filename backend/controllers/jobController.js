@@ -152,7 +152,7 @@ const closeJob = async (req, res) => {
 // @access  Private (Employer only)
 const getEmployerJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ employerId: req.user._id }).sort({ createdAt: -1 });
+    const jobs = await Job.find({ employerId: req.user._id, status: { $ne: 'Deleted' } }).sort({ createdAt: -1 });
     res.json(jobs);
   } catch (error) {
     console.error('Get Employer Jobs Error:', error.message);
@@ -219,8 +219,8 @@ const searchJobs = async (req, res) => {
   // Build query
   const query = {};
 
-  // Default to Open if status is not specified or status is not Closed
-  if (status) {
+  // Only allow Open or Closed status query, default to Open, never retrieve Deleted status
+  if (status && ['Open', 'Closed'].includes(status)) {
     query.status = status;
   } else {
     query.status = 'Open';
@@ -287,7 +287,9 @@ const deleteJob = async (req, res) => {
       return res.status(403).json({ message: 'Access denied: You are not the owner of this job posting' });
     }
 
-    await job.deleteOne();
+    // Soft delete: change status to 'Deleted' instead of physical removal
+    job.status = 'Deleted';
+    await job.save();
 
     res.json({
       success: true,

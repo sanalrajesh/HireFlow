@@ -8,7 +8,7 @@ import {
   PlusCircle,
   LogOut,
   User,
-  Home
+  Building
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -21,6 +21,7 @@ const Sidebar = () => {
   };
 
   const navItems = [
+    { name: 'Company Profile', to: '/employer/profile', icon: Building },
     { name: 'Dashboard', to: '/employer/dashboard', icon: LayoutDashboard },
     { name: 'Manage Jobs', to: '/employer/jobs', icon: Briefcase, end: true },
     { name: 'Post a Job', to: '/employer/jobs/create', icon: PlusCircle },
@@ -78,13 +79,6 @@ const Sidebar = () => {
 
       {/* Sidebar Footer */}
       <div className="p-4 border-t border-slate-800 space-y-2">
-        <NavLink
-          to="/"
-          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white text-slate-400"
-        >
-          <Home className="h-4 w-4" />
-          <span>Back to Main Site</span>
-        </NavLink>
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-danger hover:bg-danger/10 hover:text-white transition-all-200 text-left"

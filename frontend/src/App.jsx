@@ -25,6 +25,7 @@ import EmployerManageJobs from './pages/EmployerManageJobs';
 import EmployerCreateJob from './pages/EmployerCreateJob';
 import EmployerEditJob from './pages/EmployerEditJob';
 import EmployerApplicants from './pages/EmployerApplicants';
+import EmployerProfile from './pages/EmployerProfile';
 
 import './App.css';
 
@@ -119,6 +120,16 @@ function App() {
               <ProtectedRoute allowedRoles={['Employer']}>
                 <EmployerLayout>
                   <EmployerApplicants />
+                </EmployerLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer/profile"
+            element={
+              <ProtectedRoute allowedRoles={['Employer']}>
+                <EmployerLayout>
+                  <EmployerProfile />
                 </EmployerLayout>
               </ProtectedRoute>
             }

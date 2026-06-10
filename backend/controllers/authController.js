@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const EmployerProfile = require('../models/EmployerProfile');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register a new user
@@ -36,6 +37,14 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // If the registered user is an Employer, automatically initialize their EmployerProfile
+      if (role === 'Employer') {
+        await EmployerProfile.create({
+          userId: user._id,
+          companyName: fullName,
+        });
+      }
+
       res.status(201).json({
         _id: user._id,
         fullName: user.fullName,

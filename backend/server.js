@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const candidateRoutes = require('./routes/candidateRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const employerRoutes = require('./routes/employerRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/candidate', candidateRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/employer', employerRoutes);
 
 // Base route for API check
 app.get('/', (req, res) => {

@@ -25,6 +25,14 @@ const employerProfileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    companyEmail: {
+      type: String,
+      trim: true,
+    },
+    companyPhone: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
@@ -32,3 +40,4 @@ const employerProfileSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('EmployerProfile', employerProfileSchema);
+

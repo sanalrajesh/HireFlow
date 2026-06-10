@@ -120,7 +120,7 @@ const seedData = async () => {
     console.log('Creating Jobs...');
     const job1 = await Job.create({
       employerId: employer1._id,
-      title: 'Full Stack Engineer',
+      title: '[Demo] Full Stack Engineer',
       description: 'Build backend and frontend features for our core SaaS product using MERN stack.',
       location: 'San Francisco, CA',
       salary: 120000,
@@ -132,7 +132,7 @@ const seedData = async () => {
 
     const job2 = await Job.create({
       employerId: employer1._id,
-      title: 'Backend Developer',
+      title: '[Demo] Backend Developer',
       description: 'Design and deploy robust REST APIs using Node.js, Express, and microservices.',
       location: 'Remote (US)',
       salary: 110000,
@@ -144,7 +144,7 @@ const seedData = async () => {
 
     const job3 = await Job.create({
       employerId: employer1._id,
-      title: 'DevOps Engineer',
+      title: '[Demo] DevOps Engineer',
       description: 'Manage CI/CD pipelines, cloud infrastructure on AWS, and orchestration using Kubernetes.',
       location: 'San Francisco, CA',
       salary: 135000,
@@ -156,7 +156,7 @@ const seedData = async () => {
 
     const job4 = await Job.create({
       employerId: employer2._id,
-      title: 'UI/UX Designer',
+      title: '[Demo] UI/UX Designer',
       description: 'Collaborate with product teams to design web and mobile mockups in Figma.',
       location: 'New York, NY',
       salary: 95000,
@@ -168,7 +168,7 @@ const seedData = async () => {
 
     const job5 = await Job.create({
       employerId: employer2._id,
-      title: 'Frontend Developer',
+      title: '[Demo] Frontend Developer',
       description: 'Build polished web interfaces from design mockups using HTML, CSS, React, and Tailwind.',
       location: 'Remote',
       salary: 90000,

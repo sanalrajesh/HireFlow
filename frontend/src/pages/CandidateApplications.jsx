@@ -106,21 +106,27 @@ const CandidateApplications = () => {
               {/* Status and Action */}
               <div className="flex md:flex-col justify-between items-end md:items-end gap-3 self-stretch md:self-center">
                 <div className="text-left md:text-right">
-                  <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
-                    app.status === 'Shortlisted'
-                      ? 'bg-success-light text-success'
-                      : app.status === 'Rejected'
-                      ? 'bg-danger-light text-danger'
-                      : 'bg-primary/10 text-primary'
-                  }`}>
-                    {app.status}
-                  </span>
+                  {app.jobId?.status === 'Deleted' || !app.jobId ? (
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-danger-light text-danger">
+                      Deleted
+                    </span>
+                  ) : (
+                    <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                      app.status === 'Shortlisted'
+                        ? 'bg-success-light text-success'
+                        : app.status === 'Rejected'
+                        ? 'bg-danger-light text-danger'
+                        : 'bg-primary/10 text-primary'
+                    }`}>
+                      {app.status}
+                    </span>
+                  )}
                   <p className="text-[10px] text-slate-400 mt-2">
                     Updated: {new Date(app.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
                 
-                {app.jobId && (
+                {app.jobId && app.jobId.status !== 'Deleted' ? (
                   <Link
                     to={`/jobs/${app.jobId._id}`}
                     className="flex items-center gap-0.5 text-xs font-bold text-primary group-hover:underline"
@@ -128,6 +134,10 @@ const CandidateApplications = () => {
                     <span>View Posting</span>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
+                ) : (
+                  <span className="text-xs font-semibold text-slate-400">
+                    Posting Deleted
+                  </span>
                 )}
               </div>
             </div>

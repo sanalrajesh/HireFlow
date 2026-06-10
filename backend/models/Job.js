@@ -42,8 +42,8 @@ const jobSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ['Open', 'Closed'],
-        message: 'Status must be Open or Closed',
+        values: ['Open', 'Closed', 'Deleted'],
+        message: 'Status must be Open, Closed, or Deleted',
       },
       default: 'Open',
     },

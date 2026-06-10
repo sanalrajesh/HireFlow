@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Briefcase, LogOut, User, LayoutDashboard, FileText } from 'lucide-react';
+import { Briefcase, LogOut, User, LayoutDashboard, FileText, Building } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -45,13 +45,21 @@ const Navbar = () => {
                 </Link>
 
                 {/* Profile Shortcut */}
-                {user.role === 'Candidate' && (
+                {user.role === 'Candidate' ? (
                   <Link
                     to="/candidate/profile"
                     className="flex items-center gap-1.5 text-slate-600 hover:text-primary font-medium text-sm transition-all-200"
                   >
                     <User className="h-4 w-4" />
                     <span>My Profile</span>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/employer/profile"
+                    className="flex items-center gap-1.5 text-slate-600 hover:text-primary font-medium text-sm transition-all-200"
+                  >
+                    <Building className="h-4 w-4" />
+                    <span>Company Profile</span>
                   </Link>
                 )}
 
