@@ -24,6 +24,9 @@ app.use(cors({
   ],
   credentials: true
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Serve static uploaded files (resumes)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
