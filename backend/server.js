@@ -17,14 +17,13 @@ connectDB();
 
 const app = express();
 
-// Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite default port
+  origin: [
+    'http://localhost:5173',
+    'https://hire-flow-khaki.vercel.app'
+  ],
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // Serve static uploaded files (resumes)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
