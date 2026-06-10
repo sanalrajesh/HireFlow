@@ -1,5 +1,3 @@
-const axios = require('axios'); // Wait, we are in a React Vite project where ES6 imports (import axios from 'axios') are preferred!
-// Let's use ESM imports for frontend files!
 import axios from 'axios';
 
 const API = axios.create({
